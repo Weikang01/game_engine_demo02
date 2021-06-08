@@ -1,0 +1,24 @@
+#include <Engine.h>
+
+class Sandbox:public Engine::Application
+{
+public:
+	Sandbox();
+	~Sandbox();
+
+private:
+
+};
+
+Sandbox::Sandbox()
+{
+}
+
+Sandbox::~Sandbox()
+{
+}
+
+Engine::Application* Engine::CreateApplication()
+{
+	return new Sandbox();
+}
