@@ -109,6 +109,7 @@ project "Sandbox"
     {
         "Engine/src",
         "Engine/vendor/spdlog/include",
+        "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}"
     }
 
