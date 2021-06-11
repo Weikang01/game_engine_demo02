@@ -2,9 +2,6 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>D:\github_sync\the_cherno_game_engine_tutorial\bin\Debug-windows-x86\Engine\Engine.dll</FullPath>
-    </ProjectOutput>
-    <ProjectOutput>
       <FullPath>D:\github_sync\the_cherno_game_engine_tutorial\bin\Debug-windows-x86\Sandbox\Sandbox.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>

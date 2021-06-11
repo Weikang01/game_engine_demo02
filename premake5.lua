@@ -23,8 +23,10 @@ include "Engine/vendor/imgui"
 
 project "Engine"
     location "Engine"
-    kind "SharedLib"
+    kind "StaticLib"
     language "C++"
+    cppdialect "C++17"
+    staticruntime "On"
 
     targetdir ("bin/".. outputdir .. "/%{prj.name}")
     objdir ("bin-int/".. outputdir .. "/%{prj.name}")
@@ -36,6 +38,11 @@ project "Engine"
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
+    }
+
+    defines
+    {
+        "_CRT_SECURE_NO_WARNINGS"
     }
 
     includedirs
@@ -56,8 +63,17 @@ project "Engine"
         "opengl32.lib"
     }
 
+    filter "action:vs*"
+        disablewarnings 
+        {
+            "6031",
+            "26812",
+            "26495",
+            "26451",
+            "26498"
+        }
+
     filter "system:windows"
-        cppdialect "C++17"
         staticruntime "On"
         systemversion "latest"
 
@@ -68,33 +84,27 @@ project "Engine"
             "WIN32"
         }
 
-        postbuildcommands
-        {
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Sandbox")
-        }
-
     filter "configurations:Debug"
         defines "ENGINE_DEBUG"
-        staticruntime "Off"
-        buildoptions "/MDd"
+        runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
         defines "ENGINE_RELEASE"
-        staticruntime "Off"
-        buildoptions "/MD"
+        runtime "Release"
         optimize "On"
 
     filter "configurations:Dist"
         defines "ENGINE_DIST"
-        staticruntime "Off"
-        buildoptions "/MD"
+        runtime "Release"
         optimize "On"
 
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
     language "C++"
+    cppdialect "C++17"
+    staticruntime "On"
 
     targetdir ("bin/".. outputdir .. "/%{prj.name}")
     objdir ("bin-int/".. outputdir .. "/%{prj.name}")
@@ -119,8 +129,6 @@ project "Sandbox"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
-        staticruntime "On"
         systemversion "latest"
 
         defines
@@ -131,18 +139,12 @@ project "Sandbox"
 
     filter "configurations:Debug"
         defines "ENGINE_DEBUG"
-        staticruntime "Off"
-        buildoptions "/MDd"
         symbols "On"
 
     filter "configurations:Release"
         defines "ENGINE_RELEASE"
-        staticruntime "Off"
-        buildoptions "/MD"
         optimize "On"
 
     filter "configurations:Dist"
         defines "ENGINE_DIST"
-        staticruntime "Off"
-        buildoptions "/MD"
         optimize "On"
