@@ -6,6 +6,7 @@
 #include "Engine/Events/ApplicationEvent.h"
 #include "Engine/Events/KeyEvent.h"
 #include "Engine/Events/MouseEvent.h"
+#include "Engine/Renderer/Shader.h"
 
 namespace Engine
 {
@@ -34,6 +35,10 @@ namespace Engine
 		ImGuiLayer* m_imGuiLayer = nullptr;
 		bool m_running = true;
 		LayerStack m_layerStack;
+
+
+		unsigned int VAO, VBO, EBO;
+		std::unique_ptr<Shader> m_shader;
 	};
 
 	// To be defined in CLIENT

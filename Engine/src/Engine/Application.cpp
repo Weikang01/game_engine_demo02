@@ -21,6 +21,65 @@ namespace Engine
 
 		m_imGuiLayer = new ImGuiLayer();
 		PushLayer(m_imGuiLayer);
+
+
+
+
+		// Render
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+		float vertices[3 * 3] =
+		{
+			-.5f, -.5f, .0f,
+			 .5f, -.5f, .0f,
+			 .0f,  .5f, .0f
+		};
+
+		glEnableVertexAttribArray(0);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+		unsigned int indices[3] =
+		{
+			0,1,2
+		};
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+
+		const char* vertexSrc = R"(
+#version 440 core
+layout(location = 0) in vec3 position;
+
+out vec3 pos;
+
+void main()
+{
+	gl_Position = vec4(position, 1.f);
+	pos = position * .5f + vec3(.5f);
+}
+)";
+
+		const char* fragmentSrc = R"(
+#version 440 core
+
+in vec3 pos;
+
+void main()
+{
+	gl_FragColor = vec4(pos, 1.f);
+}
+)";
+
+		m_shader.reset(new Shader(1, vertexSrc, fragmentSrc));
 	}
 
 	Application::~Application()
@@ -62,8 +121,15 @@ namespace Engine
 	{
 		while (m_running)
 		{
-			glClearColor(1, 0, 0, 1);
+			glClearColor(0, 0, 0, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			glBindVertexArray(VAO);
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+			m_shader->use();
+			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
 			m_imGuiLayer->begin();
 			for (Layer* layer : m_layerStack)

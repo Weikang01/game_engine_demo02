@@ -4,8 +4,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+
 namespace Engine
 {
+	class GraphicsContext;
+	
 	class WindowsWindow : public Window
 	{
 	public:
@@ -28,6 +31,7 @@ namespace Engine
 		virtual void Shutdown();
 
 		GLFWwindow* m_window = nullptr;
+		GraphicsContext* m_context = nullptr;
 
 		struct WindowData
 		{
