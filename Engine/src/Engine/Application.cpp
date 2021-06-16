@@ -11,6 +11,27 @@ namespace Engine
 {
 	Application* Application::s_instance = nullptr;
 
+	static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+	{
+		switch (type)
+		{
+		case Engine::ShaderDataType::Float:
+		case Engine::ShaderDataType::Float2:
+		case Engine::ShaderDataType::Float3:
+		case Engine::ShaderDataType::Float4:
+		case Engine::ShaderDataType::Mat3:
+		case Engine::ShaderDataType::Mat4:
+			return GL_FLOAT;
+		case Engine::ShaderDataType::Int:
+		case Engine::ShaderDataType::Int2:
+		case Engine::ShaderDataType::Int3:
+		case Engine::ShaderDataType::Int4:
+			return GL_INT;
+		case Engine::ShaderDataType::Bool:
+			return GL_BOOL;
+		}
+	}
+
 	Application::Application()
 	{
 		EG_CORE_ASSERT(!s_instance, "Application already exists!");
@@ -27,17 +48,33 @@ namespace Engine
 
 		glBindVertexArray(VAO);
 
-		float vertices[3 * 3] =
+		float vertices[(3 + 4) * 3] =
 		{
-			-.5f, -.5f, .0f,
-			 .5f, -.5f, .0f,
-			 .0f,  .5f, .0f
+			-.5f, -.5f, .0f, 1.f, 0.f, 1.f, 1.f,
+			 .5f, -.5f, .0f, 0.f, 1.f, 1.f, 1.f,
+			 .0f,  .5f, .0f, 1.f, 1.f, 0.f, 1.f
 		};
 
-		m_vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		{
+			m_vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+			BufferLayout layout =
+			{
+				{ShaderDataType::Float3, "a_Position"},
+				{ShaderDataType::Float4, "a_Color"}
+			};
+			m_vertexBuffer->SetLayout(layout);
+		}
 
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		uint32_t index = 0;
+		const auto& layout = m_vertexBuffer->GetLayout();
+		for (const auto& element : layout)
+		{
+			glEnableVertexAttribArray(index);
+			glVertexAttribPointer(index, element.GetComponentCount(), ShaderDataTypeToOpenGLBaseType(element.Type), element.Normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)element.Offset);
+			index++;
+		}
+
+
 
 		uint32_t indices[3] =
 		{
@@ -51,13 +88,16 @@ namespace Engine
 		const char* vertexSrc = R"(
 #version 440 core
 layout(location = 0) in vec3 position;
+layout(location = 1) in vec4 color;
 
 out vec3 pos;
+out vec4 col;
 
 void main()
 {
 	gl_Position = vec4(position, 1.f);
 	pos = position * .5f + vec3(.5f);
+	col = color;
 }
 )";
 
@@ -65,10 +105,11 @@ void main()
 #version 440 core
 
 in vec3 pos;
+in vec4 col;
 
 void main()
 {
-	gl_FragColor = vec4(pos, 1.f);
+	gl_FragColor = col;
 }
 )";
 
