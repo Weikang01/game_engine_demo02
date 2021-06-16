@@ -7,6 +7,7 @@
 #include "Engine/Events/KeyEvent.h"
 #include "Engine/Events/MouseEvent.h"
 #include "Engine/Renderer/Shader.h"
+#include <Engine/Renderer/Buffer.h>
 
 namespace Engine
 {
@@ -37,8 +38,10 @@ namespace Engine
 		LayerStack m_layerStack;
 
 
-		unsigned int VAO, VBO, EBO;
+		unsigned int VAO;
 		std::unique_ptr<Shader> m_shader;
+		std::unique_ptr<VertexBuffer> m_vertexBuffer;
+		std::unique_ptr<IndexBuffer> m_indexBuffer;
 	};
 
 	// To be defined in CLIENT
