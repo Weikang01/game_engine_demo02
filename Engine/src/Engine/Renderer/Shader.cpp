@@ -105,9 +105,9 @@ namespace Engine
 
 	void Shader::compile(int dummy, const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometricShaderCode)
 	{
-		unsigned int vertexId = loadShader(vertexShaderCode, GL_VERTEX_SHADER, 0);
-		unsigned int fragmentId = loadShader(fragmentShaderCode, GL_FRAGMENT_SHADER, 0);
-		unsigned int geometryId = geometricShaderCode ? loadShader(geometricShaderCode, GL_GEOMETRY_SHADER, 0) : 0;
+		unsigned int vertexId = loadShader(vertexShaderCode, GL_VERTEX_SHADER, "");
+		unsigned int fragmentId = loadShader(fragmentShaderCode, GL_FRAGMENT_SHADER, "");
+		unsigned int geometryId = geometricShaderCode ? loadShader(geometricShaderCode, GL_GEOMETRY_SHADER, "") : 0;
 		loadProgram(vertexId, fragmentId, geometryId);
 	}
 

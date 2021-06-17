@@ -7,7 +7,8 @@
 #include "Engine/Events/KeyEvent.h"
 #include "Engine/Events/MouseEvent.h"
 #include "Engine/Renderer/Shader.h"
-#include <Engine/Renderer/Buffer.h>
+#include "Engine/Renderer/Buffer.h"
+#include "Engine/Renderer/VertexArray.h"
 
 namespace Engine
 {
@@ -37,11 +38,13 @@ namespace Engine
 		bool m_running = true;
 		LayerStack m_layerStack;
 
+		std::shared_ptr<Shader> m_shader;
+		std::shared_ptr<Shader> m_squareShader;
+		std::shared_ptr<VertexBuffer> m_vertexBuffer;
+		std::shared_ptr<IndexBuffer> m_indexBuffer;
+		std::shared_ptr<VertexArray> m_vertexArray;
 
-		unsigned int VAO;
-		std::unique_ptr<Shader> m_shader;
-		std::unique_ptr<VertexBuffer> m_vertexBuffer;
-		std::unique_ptr<IndexBuffer> m_indexBuffer;
+		std::shared_ptr<VertexArray> m_SquareVA;
 	};
 
 	// To be defined in CLIENT
