@@ -122,37 +122,25 @@ void main()
 		m_squareShader.reset(new Engine::Shader(1, squareVertexSrc, squareFragmentSrc));
 	}
 
-	void OnUpdate() override
+	void OnUpdate(Engine::Timestep ts) override
 	{
 		if (Engine::Input::IsKeyPressed(Engine::Key::A))
-		{
-			m_CamPos.x -= m_CamSpeed;
-		}
+			m_CamPos.x -= m_CamSpeed * ts;
 
 		if (Engine::Input::IsKeyPressed(Engine::Key::D))
-		{
-			m_CamPos.x += m_CamSpeed;
-		}
+			m_CamPos.x += m_CamSpeed * ts;
 
 		if (Engine::Input::IsKeyPressed(Engine::Key::S))
-		{
-			m_CamPos.y -= m_CamSpeed;
-		}
+			m_CamPos.y -= m_CamSpeed * ts;
 
 		if (Engine::Input::IsKeyPressed(Engine::Key::W))
-		{
-			m_CamPos.y += m_CamSpeed;
-		}
+			m_CamPos.y += m_CamSpeed * ts;
 
 		if (Engine::Input::IsKeyPressed(Engine::Key::Q))
-		{
-			m_CamAngle += m_CamRotSpeed;
-		}
+			m_CamAngle += m_CamRotSpeed * ts;
 
 		if (Engine::Input::IsKeyPressed(Engine::Key::E))
-		{
-			m_CamAngle -= m_CamRotSpeed;
-		}
+			m_CamAngle -= m_CamRotSpeed * ts;
 
 		Engine::RenderCommand::SetClearColor({ 0, 0, 0, 1 });
 		Engine::RenderCommand::Clear();

@@ -1,6 +1,7 @@
 #pragma once
 #include "Core.h"
 
+
 #include "Engine/Window.h"
 #include "Engine/LayerStack.h"
 #include "Engine/Events/ApplicationEvent.h"
@@ -39,7 +40,7 @@ namespace Engine
 		bool m_running = true;
 		LayerStack m_layerStack;
 
-
+		float m_lastFrameTime = 0.f;
 	};
 
 	// To be defined in CLIENT
