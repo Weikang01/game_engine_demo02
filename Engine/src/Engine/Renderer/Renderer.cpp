@@ -16,9 +16,10 @@ namespace Engine
     {
     }
 
-    void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader)
+    void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform)
     {
         shader->use();
+        shader->setMat4fv("modelMat", transform);
         shader->setMat4fv("viewProjMat", m_SceneData->ViewProjectionMat);
 
         vertexArray->Bind();

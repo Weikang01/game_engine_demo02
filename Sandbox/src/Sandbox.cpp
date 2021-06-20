@@ -1,5 +1,6 @@
 #include <Engine.h>
 #include <imgui.h>
+#include <glm/ext/matrix_transform.hpp>
 
 class ExampleLayer :public Engine::Layer
 {
@@ -71,10 +72,11 @@ out vec3 pos;
 out vec4 col;
 
 uniform mat4 viewProjMat;
+uniform mat4 modelMat;
 
 void main()
 {
-	gl_Position = viewProjMat * vec4(position, 1.f);
+	gl_Position = viewProjMat * modelMat * vec4(position, 1.f);
 	pos = position * .5f + vec3(.5f);
 	col = color;
 }
@@ -100,10 +102,11 @@ layout(location = 0) in vec3 position;
 
 out vec3 pos;
 uniform mat4 viewProjMat;
+uniform mat4 modelMat;
 
 void main()
 {
-	gl_Position = viewProjMat * vec4(position, 1.f);
+	gl_Position = viewProjMat * modelMat * vec4(position, 1.f);
 	pos = position + vec3(.5f);
 }
 )";
@@ -145,14 +148,24 @@ void main()
 		Engine::RenderCommand::SetClearColor({ 0, 0, 0, 1 });
 		Engine::RenderCommand::Clear();
 
-
 		m_Camera.SetPosition(m_CamPos);
 		m_Camera.SetRotation(m_CamAngle);
 		Engine::Renderer::BeginScene(m_Camera);
 
-		Engine::Renderer::Submit(m_SquareVA, m_squareShader);
+		static glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(.05f));
 
-		Engine::Renderer::Submit(m_vertexArray, m_shader);
+		for (int y = 0; y < 20; y++)
+		{
+			for (int x = 0; x < 20; x++)
+			{
+				glm::vec3 pos(x * .11f, y * .11, 0.f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.f), pos) * scale;
+				Engine::Renderer::Submit(m_SquareVA, m_squareShader, transform);
+
+			}
+		}
+
+		//Engine::Renderer::Submit(m_vertexArray, m_shader);
 
 		Engine::Renderer::EndScene();
 	}
@@ -180,6 +193,7 @@ private:
 	float m_CamSpeed = .1f;
 	float m_CamAngle = 0.f;
 	float m_CamRotSpeed = 1.f;
+	glm::vec3 m_SquarePos = glm::vec3(.3f, .3f, 0.f);
 };
 
 
