@@ -1,8 +1,7 @@
 #include "engine_pch.h"
 #include "Application.h"
 
-#include <glad/glad.h>
-
+#include "Engine/Renderer/Renderer.h"
 #include "Engine/Input.h"
 #include "Engine/ImGui/ImGuiLayer.h"
 
@@ -173,18 +172,18 @@ void main()
 	{
 		while (m_running)
 		{
-			glClearColor(0, 0, 0, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			RenderCommand::SetClearColor({ 0, 0, 0, 1 });
+			RenderCommand::Clear();
 
-			m_SquareVA->Bind();
+			Renderer::BeginScene();
+
 			m_squareShader->use();
-			glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(m_SquareVA);
 
-			m_vertexArray->Bind();
 			m_shader->use();
-			glDrawElements(GL_TRIANGLES, m_vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(m_vertexArray);
 
-
+			Renderer::EndScene();
 
 			m_imGuiLayer->begin();
 			for (Layer* layer : m_layerStack)
