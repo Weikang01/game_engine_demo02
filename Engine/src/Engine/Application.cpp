@@ -11,6 +11,7 @@ namespace Engine
 	Application* Application::s_instance = nullptr;
 
 	Application::Application()
+		:m_Camera(-1.6f, 1.6f, -.9f, .9f)
 	{
 		EG_CORE_ASSERT(!s_instance, "Application already exists!");
 		s_instance = this;
@@ -84,9 +85,11 @@ layout(location = 1) in vec4 color;
 out vec3 pos;
 out vec4 col;
 
+uniform mat4 viewProjMat;
+
 void main()
 {
-	gl_Position = vec4(position, 1.f);
+	gl_Position = viewProjMat * vec4(position, 1.f);
 	pos = position * .5f + vec3(.5f);
 	col = color;
 }
@@ -111,10 +114,11 @@ void main()
 layout(location = 0) in vec3 position;
 
 out vec3 pos;
+uniform mat4 viewProjMat;
 
 void main()
 {
-	gl_Position = vec4(position, 1.f);
+	gl_Position = viewProjMat * vec4(position, 1.f);
 	pos = position + vec3(.5f);
 }
 )";
@@ -175,13 +179,12 @@ void main()
 			RenderCommand::SetClearColor({ 0, 0, 0, 1 });
 			RenderCommand::Clear();
 
-			Renderer::BeginScene();
+			m_Camera.SetRotation(10.f);
+			Renderer::BeginScene(m_Camera);
 
-			m_squareShader->use();
-			Renderer::Submit(m_SquareVA);
+			Renderer::Submit(m_SquareVA, m_squareShader);
 
-			m_shader->use();
-			Renderer::Submit(m_vertexArray);
+			Renderer::Submit(m_vertexArray, m_shader);
 
 			Renderer::EndScene();
 
