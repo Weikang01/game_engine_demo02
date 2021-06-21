@@ -16,7 +16,7 @@ namespace Engine
     {
     }
 
-    void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray, const std::shared_ptr<Shader>& shader, const glm::mat4& transform)
+    void Renderer::Submit(const Ref<VertexArray>& vertexArray, const Ref<Shader>& shader, const glm::mat4& transform)
     {
         std::dynamic_pointer_cast<OpenGLShader> (shader)->use();
         std::dynamic_pointer_cast<OpenGLShader> (shader)->setMat4fv("modelMat", transform);

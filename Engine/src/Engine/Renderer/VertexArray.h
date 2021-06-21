@@ -12,11 +12,11 @@ namespace Engine
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void AddVertexBuffer(std::shared_ptr<VertexBuffer>& vertexBuffer) = 0;
-		virtual void SetIndexBuffer(std::shared_ptr<IndexBuffer>& vertexBuffer) = 0;
+		virtual void AddVertexBuffer(Ref<VertexBuffer>& vertexBuffer) = 0;
+		virtual void SetIndexBuffer(Ref<IndexBuffer>& vertexBuffer) = 0;
 
-		virtual std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() = 0;
-		virtual std::shared_ptr<IndexBuffer>& GetIndexBuffer() = 0;
+		virtual std::vector<Ref<VertexBuffer>>& GetVertexBuffers() = 0;
+		virtual Ref<IndexBuffer>& GetIndexBuffer() = 0;
 
 		static VertexArray* Create();
 	};

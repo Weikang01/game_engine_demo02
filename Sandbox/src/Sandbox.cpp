@@ -188,12 +188,12 @@ void main()
 	}
 
 private:
-	std::shared_ptr<Engine::Shader> m_shader;
-	std::shared_ptr<Engine::Shader> m_squareShader;
-	std::shared_ptr<Engine::VertexBuffer> m_vertexBuffer;
-	std::shared_ptr<Engine::IndexBuffer> m_indexBuffer;
-	std::shared_ptr<Engine::VertexArray> m_vertexArray;
-	std::shared_ptr<Engine::VertexArray> m_SquareVA;
+	Engine::Ref<Engine::Shader> m_shader;
+	Engine::Ref<Engine::Shader> m_squareShader;
+	Engine::Ref<Engine::VertexBuffer> m_vertexBuffer;
+	Engine::Ref<Engine::IndexBuffer> m_indexBuffer;
+	Engine::Ref<Engine::VertexArray> m_vertexArray;
+	Engine::Ref<Engine::VertexArray> m_SquareVA;
 
 	Engine::OrthographicCamera m_Camera;
 	glm::vec3 m_CamPos = glm::vec3();
