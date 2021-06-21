@@ -2,6 +2,9 @@
 #include <imgui.h>
 #include <glm/ext/matrix_transform.hpp>
 
+#include <Platform/OpenGL/OpenGLShader.h>
+#include <glm/gtc/type_ptr.hpp>
+
 class ExampleLayer :public Engine::Layer
 {
 public:
@@ -94,7 +97,7 @@ void main()
 }
 )";
 
-		m_shader.reset(new Engine::Shader(1, vertexSrc, fragmentSrc));
+		m_shader.reset(Engine::Shader::Create(1, vertexSrc, fragmentSrc));
 
 		const char* squareVertexSrc = R"(
 #version 440 core
@@ -115,14 +118,15 @@ void main()
 #version 440 core
 
 in vec3 pos;
+uniform vec3 tint;
 
 void main()
 {
-	gl_FragColor = vec4(pos, 1.f);
+	gl_FragColor = vec4(pos * tint, 1.f);
 }
 )";
 
-		m_squareShader.reset(new Engine::Shader(1, squareVertexSrc, squareFragmentSrc));
+		m_squareShader.reset(Engine::Shader::Create(1, squareVertexSrc, squareFragmentSrc));
 	}
 
 	void OnUpdate(Engine::Timestep ts) override
@@ -160,8 +164,9 @@ void main()
 			{
 				glm::vec3 pos(x * .11f, y * .11, 0.f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.f), pos) * scale;
-				Engine::Renderer::Submit(m_SquareVA, m_squareShader, transform);
+				std::dynamic_pointer_cast<Engine::OpenGLShader> (m_squareShader)->set3fv("tint", m_SquareCol);
 
+				Engine::Renderer::Submit(m_SquareVA, m_squareShader, transform);
 			}
 		}
 
@@ -172,7 +177,9 @@ void main()
 
 	void OnImGuiRender() override
 	{
-
+		ImGui::Begin("Settings");
+		ImGui::ColorEdit3("Square Color", glm::value_ptr(m_SquareCol));
+		ImGui::End();
 	}
 
 	void OnEvent(Engine::Event& evnt) override
@@ -194,6 +201,7 @@ private:
 	float m_CamAngle = 0.f;
 	float m_CamRotSpeed = 1.f;
 	glm::vec3 m_SquarePos = glm::vec3(.3f, .3f, 0.f);
+	glm::vec3 m_SquareCol = glm::vec3(1.f, 1.f, 1.f);
 };
 
 
