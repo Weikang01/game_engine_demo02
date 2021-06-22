@@ -15,13 +15,9 @@ namespace Engine
 	class Shader
 	{
 	public:
-	protected:
-
-		virtual unsigned int loadShader(const char* code, GLenum type, const char* fileName) = 0;
-		virtual unsigned int loadShader(const char* fileName, GLenum type);
-	public:
 		Shader() {}
 
+		static Shader* Create(const char* shaderFile);
 		static Shader* Create(const char* vertexShaderFile, const char* fragmentShaderFile, const char* geometricShaderFile = nullptr);
 		static Shader* Create(int dummy, const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometricShaderCode = nullptr);
 

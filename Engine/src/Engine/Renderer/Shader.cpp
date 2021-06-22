@@ -10,29 +10,15 @@
 
 namespace Engine
 {
-	using std::endl;
-	using std::ifstream;
-	using std::stringstream;
-
-	unsigned int Shader::loadShader(const char* fileName, GLenum type)
+	Shader* Shader::Create(const char* shaderFile)
 	{
-		string codeString;
-		ifstream file;
-		file.exceptions(ifstream::failbit | ifstream::badbit);
-		stringstream fileStream;
-		try
+		switch (Renderer::GetAPI())
 		{
-			file.open(fileName);
-			fileStream << file.rdbuf();
-			codeString = fileStream.str();
+		case RendererAPI::API::OpenGL:
+			return new OpenGLShader(shaderFile);
+			break;
 		}
-		catch (ifstream::failure e)
-		{
-			EG_CORE_ERROR("Unable to open shader file! {0}", fileName);
-		}
-		const char* code = codeString.c_str();
-
-		return loadShader(code, type, fileName);
+		EG_CORE_ASSERT(false, "Shader case is currently not supported!");
 	}
 
 	Shader* Shader::Create(const char* vertexShaderFile, const char* fragmentShaderFile, const char* geometricShaderFile)

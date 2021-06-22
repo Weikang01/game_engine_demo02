@@ -11,6 +11,19 @@ namespace Engine
 	using std::ifstream;
 	using std::stringstream;
 
+	static GLenum ShaderTypeFromString(const std::string& type)
+	{
+		if (type == "vertex")
+			return GL_VERTEX_SHADER;
+		else if (type == "fragment" || type == "pixel")
+			return GL_FRAGMENT_SHADER;
+		else if (type == "geometry")
+			return GL_GEOMETRY_SHADER;
+		else
+			EG_CORE_ASSERT(false, "Unknown shader type");
+		return 0;
+	}
+
 	unsigned int OpenGLShader::loadShader(const char* code, GLenum type, const char* fileName)
 	{
 		unsigned int shaderId;
@@ -28,6 +41,92 @@ namespace Engine
 		}
 
 		return shaderId;
+	}
+
+	unsigned int OpenGLShader::loadShader(const char* fileName, GLenum type)
+	{
+		string codeString;
+		ifstream file;
+		file.exceptions(ifstream::failbit | ifstream::badbit);
+		stringstream fileStream;
+		try
+		{
+			file.open(fileName);
+			fileStream << file.rdbuf();
+			codeString = fileStream.str();
+		}
+		catch (ifstream::failure e)
+		{
+			EG_CORE_ERROR("Unable to open shader file! {0}", fileName);
+		}
+		const char* code = codeString.c_str();
+
+		return loadShader(code, type, fileName);
+	}
+
+	void OpenGLShader::loadShader(const char* fileName)
+	{
+		string codeString;
+		ifstream file(fileName, std::ios::in, std::ios::binary);
+		if (file)
+		{
+			file.seekg(0, std::ios::end);
+			codeString.resize(file.tellg());
+			file.seekg(0, std::ios::beg);
+			file.read(&codeString[0], codeString.size());
+			file.close();
+		}
+		else
+			EG_CORE_ERROR("Unable to open shader file! {0}", fileName);
+		
+		std::unordered_map<GLenum, std::string> shaderMap;
+
+		const char* typeToken = "#type";
+		size_t typeTokenLength = strlen(typeToken);
+		size_t pos = codeString.find(typeToken, 0);
+
+		while (pos != std::string::npos)
+		{
+			size_t eol = codeString.find_first_of("\r\n", pos);
+			EG_CORE_ASSERT(eol != std::string::npos, "Syntax error");
+			size_t begin = pos + typeTokenLength + 1;
+			std::string type = codeString.substr(begin, eol - begin);
+			EG_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type specified!");
+
+			size_t nextLinePos = codeString.find_first_not_of("\r\n", eol);
+			pos = codeString.find(typeToken, nextLinePos);
+			shaderMap[ShaderTypeFromString(type)] = codeString.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? codeString.size() - 1 : nextLinePos));
+		}
+
+		loadProgram(shaderMap, fileName);
+	}
+
+	void OpenGLShader::loadProgram(const std::unordered_map<GLenum, std::string>& shaderMap, const char* fileName)
+	{
+		id = glCreateProgram();
+
+		std::vector<unsigned int> shaderIDs;
+		shaderIDs.resize(shaderMap.size());
+		unsigned int i = 0;
+		for (auto& kv : shaderMap)
+		{
+			shaderIDs[i] = loadShader(kv.second.c_str(), kv.first, fileName);
+			glAttachShader(id, shaderIDs[i]);
+			i++;
+		}
+		glLinkProgram(id);
+
+		int success;
+		char infoLog[512];
+		glGetProgramiv(id, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetProgramInfoLog(id, 512, NULL, infoLog);
+			EG_CORE_ERROR("Program compilation failure! \n{0}", infoLog);
+		}
+
+		for (size_t i = 0; i < shaderIDs.size(); i++)
+			glDeleteShader(shaderIDs[i]);
 	}
 
 	void OpenGLShader::loadProgram(unsigned int vertexId, unsigned int fragmentId, unsigned int geometryId)
@@ -61,6 +160,11 @@ namespace Engine
 		: id(shader.id), texSlotCounter(shader.texSlotCounter)
 	{}
 
+	OpenGLShader::OpenGLShader(const char* shaderFile)
+	{
+		loadShader(shaderFile);
+	}
+
 	OpenGLShader::OpenGLShader(const char* vertexShaderFile, const char* fragmentShaderFile, const char* geometryShaderFile)
 		: id(0), texSlotCounter(0)
 	{
@@ -75,9 +179,9 @@ namespace Engine
 
 	void OpenGLShader::compile(const char* vertexShaderFile, const char* fragmentShaderFile, const char* geometricShaderFile)
 	{
-		unsigned int vertexId = Shader::loadShader(vertexShaderFile, GL_VERTEX_SHADER);
-		unsigned int fragmentId = Shader::loadShader(fragmentShaderFile, GL_FRAGMENT_SHADER);
-		unsigned int geometryId = geometricShaderFile ? Shader::loadShader(geometricShaderFile, GL_GEOMETRY_SHADER) : 0;
+		unsigned int vertexId = loadShader(vertexShaderFile, GL_VERTEX_SHADER);
+		unsigned int fragmentId = loadShader(fragmentShaderFile, GL_FRAGMENT_SHADER);
+		unsigned int geometryId = geometricShaderFile ? loadShader(geometricShaderFile, GL_GEOMETRY_SHADER) : 0;
 		loadProgram(vertexId, fragmentId, geometryId);
 	}
 

@@ -10,11 +10,16 @@ namespace Engine
 	private:
 		unsigned int id;
 
-		unsigned int loadShader(const char* code, GLenum type, const char* fileName) override;
+		unsigned int loadShader(const char* code, GLenum type, const char* fileName);
+		unsigned int loadShader(const char* fileName, GLenum type);
+		void loadShader(const char* fileName);
+		
+		void loadProgram(const std::unordered_map<GLenum, std::string>& shaderMap, const char* fileName);
 		void loadProgram(unsigned int vertexId, unsigned int fragmentId, unsigned int geometryId);
 	public:
 		OpenGLShader();
 		OpenGLShader(const OpenGLShader& shader);
+		OpenGLShader(const char* shaderFile);
 		OpenGLShader(const char* vertexShaderFile, const char* fragmentShaderFile, const char* geometricShaderFile = nullptr);
 		OpenGLShader(int dummy, const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometricShaderCode = nullptr);
 
