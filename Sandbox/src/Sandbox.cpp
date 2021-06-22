@@ -133,7 +133,8 @@ void main()
 
 		m_squareShader.reset(Engine::Shader::Create(1, squareVertexSrc, squareFragmentSrc));
 
-		m_Texture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
+		m_checkerBoardTexture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
+		m_faceTexture = Engine::Texture2D::Create("assets/textures/awesomeface.png");
 		std::dynamic_pointer_cast<Engine::OpenGLShader> (m_squareShader)->setInt("u_texture", 0);
 	}
 
@@ -166,7 +167,9 @@ void main()
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(.05f));
 
-		m_Texture->Bind(0);
+		m_checkerBoardTexture->Bind(0);
+		Engine::Renderer::Submit(m_SquareVA, m_squareShader, glm::scale(glm::mat4(1.f), glm::vec3(1.5f)));
+		m_faceTexture->Bind(0);
 		Engine::Renderer::Submit(m_SquareVA, m_squareShader, glm::scale(glm::mat4(1.f), glm::vec3(1.5f)));
 		std::dynamic_pointer_cast<Engine::OpenGLShader> (m_squareShader)->set3fv("tint", m_SquareCol);
 
@@ -194,7 +197,8 @@ private:
 	Engine::Ref<Engine::IndexBuffer> m_indexBuffer;
 	Engine::Ref<Engine::VertexArray> m_vertexArray;
 	Engine::Ref<Engine::VertexArray> m_SquareVA;
-	Engine::Ref<Engine::Texture2D> m_Texture;
+	Engine::Ref<Engine::Texture2D> m_checkerBoardTexture;
+	Engine::Ref<Engine::Texture2D> m_faceTexture;
 
 	Engine::OrthographicCamera m_Camera;
 	glm::vec3 m_CamPos = glm::vec3();

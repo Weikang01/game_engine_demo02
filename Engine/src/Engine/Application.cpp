@@ -20,6 +20,8 @@ namespace Engine
 		m_window = std::unique_ptr<Window>(Window::Create());
 		m_window->SetEventCallback(ENGINE_BIND_EVENT_FN(Application::OnEvent));
 
+		Renderer::Init();
+
 		m_imGuiLayer = new ImGuiLayer();
 		PushLayer(m_imGuiLayer);
 	}

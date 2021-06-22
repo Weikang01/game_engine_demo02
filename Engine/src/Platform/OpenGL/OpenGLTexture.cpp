@@ -17,15 +17,16 @@ namespace Engine
 		m_Width = width;
 		m_Height = height;
 
+		GLenum dataFormatArray[]{ GL_FALSE, GL_RED, GL_RG, GL_RGB, GL_RGBA };
+		GLenum internalFormatArray[]{ GL_FALSE, GL_R8, GL_RG8, GL_RGB8, GL_RGBA8 };
+
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_ID);
-		glTextureStorage2D(m_ID, 1, GL_RGB8, width, height);
+		glTextureStorage2D(m_ID, 1, internalFormatArray[channel], width, height);
 
 		glTextureParameteri(m_ID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_ID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-		GLenum colorChannelArray[]{ GL_FALSE, GL_RED, GL_RG, GL_RGB, GL_RGBA };
-
-		glTextureSubImage2D(m_ID, 0, 0, 0, width, height, colorChannelArray[channel], GL_UNSIGNED_BYTE, data);
+		glTextureSubImage2D(m_ID, 0, 0, 0, width, height, dataFormatArray[channel], GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
 	}
