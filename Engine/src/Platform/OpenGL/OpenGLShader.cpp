@@ -163,16 +163,30 @@ namespace Engine
 	OpenGLShader::OpenGLShader(const char* shaderFile)
 	{
 		loadShader(shaderFile);
+
+		std::string str_path = std::string(shaderFile);
+		auto lastSlash = str_path.find_last_of("/\\");
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		auto lastDot = str_path.rfind('.');
+		auto count = lastDot == std::string::npos ? str_path.size() - lastSlash : lastDot - lastSlash;
+		name = str_path.substr(lastSlash, count);
 	}
 
 	OpenGLShader::OpenGLShader(const char* vertexShaderFile, const char* fragmentShaderFile, const char* geometryShaderFile)
 		: id(0), texSlotCounter(0)
 	{
 		compile(vertexShaderFile, fragmentShaderFile, geometryShaderFile);
+
+		std::string str_path = std::string(vertexShaderFile);
+		auto lastSlash = str_path.find_last_of("/\\");
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		auto lastDot = str_path.rfind('.');
+		auto count = lastDot == std::string::npos ? str_path.size() - lastSlash : lastDot - lastSlash;
+		name = str_path.substr(lastSlash, count);
 	}
 
-	OpenGLShader::OpenGLShader(int dummy, const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometricShaderCode)
-		: id(0), texSlotCounter(0)
+	OpenGLShader::OpenGLShader(int dummy, const char* shaderName, const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometricShaderCode)
+		: id(0), texSlotCounter(0), name(shaderName)
 	{
 		compile(0, vertexShaderCode, fragmentShaderCode, geometricShaderCode);
 	}

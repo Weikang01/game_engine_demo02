@@ -66,44 +66,10 @@ public:
 		squareIB.reset(Engine::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
-		const char* vertexSrc = R"(
-#version 440 core
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec4 color;
-
-out vec3 pos;
-out vec4 col;
-
-uniform mat4 viewProjMat;
-uniform mat4 modelMat;
-
-void main()
-{
-	gl_Position = viewProjMat * modelMat * vec4(position, 1.f);
-	pos = position * .5f + vec3(.5f);
-	col = color;
-}
-)";
-
-		const char* fragmentSrc = R"(
-#version 440 core
-
-in vec3 pos;
-in vec4 col;
-
-void main()
-{
-	gl_FragColor = col;
-}
-)";
-
-		m_shader.reset(Engine::Shader::Create(1, vertexSrc, fragmentSrc));
-
-		m_squareShader.reset(Engine::Shader::Create("assets/shaders/texture.glsl"));
-
+		auto squareShader = m_shaderLibrary.Load("assets/shaders/texture.glsl");
 		m_checkerBoardTexture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
 		m_faceTexture = Engine::Texture2D::Create("assets/textures/awesomeface.png");
-		std::dynamic_pointer_cast<Engine::OpenGLShader> (m_squareShader)->setInt("u_texture", 0);
+		std::dynamic_pointer_cast<Engine::OpenGLShader> (squareShader)->setInt("u_texture", 0);
 	}
 
 	void OnUpdate(Engine::Timestep ts) override
@@ -135,11 +101,14 @@ void main()
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(.05f));
 
+		auto squareShader = m_shaderLibrary.Get("texture");
+
 		m_checkerBoardTexture->Bind(0);
-		Engine::Renderer::Submit(m_SquareVA, m_squareShader, glm::scale(glm::mat4(1.f), glm::vec3(1.5f)));
+
+		Engine::Renderer::Submit(m_SquareVA, squareShader, glm::scale(glm::mat4(1.f), glm::vec3(1.5f)));
 		m_faceTexture->Bind(0);
-		Engine::Renderer::Submit(m_SquareVA, m_squareShader, glm::scale(glm::mat4(1.f), glm::vec3(1.5f)));
-		std::dynamic_pointer_cast<Engine::OpenGLShader> (m_squareShader)->set3fv("tint", m_SquareCol);
+		Engine::Renderer::Submit(m_SquareVA, squareShader, glm::scale(glm::mat4(1.f), glm::vec3(1.5f)));
+		std::dynamic_pointer_cast<Engine::OpenGLShader> (squareShader)->set3fv("tint", m_SquareCol);
 
 		//Engine::Renderer::Submit(m_vertexArray, m_shader);
 
@@ -159,8 +128,7 @@ void main()
 	}
 
 private:
-	Engine::Ref<Engine::Shader> m_shader;
-	Engine::Ref<Engine::Shader> m_squareShader;
+	Engine::ShaderLibrary m_shaderLibrary;
 	Engine::Ref<Engine::VertexBuffer> m_vertexBuffer;
 	Engine::Ref<Engine::IndexBuffer> m_indexBuffer;
 	Engine::Ref<Engine::VertexArray> m_vertexArray;

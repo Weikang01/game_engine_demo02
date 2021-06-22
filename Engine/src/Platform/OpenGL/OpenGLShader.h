@@ -9,6 +9,7 @@ namespace Engine
 		unsigned int texSlotCounter;
 	private:
 		unsigned int id;
+		string name;
 
 		unsigned int loadShader(const char* code, GLenum type, const char* fileName);
 		unsigned int loadShader(const char* fileName, GLenum type);
@@ -21,7 +22,9 @@ namespace Engine
 		OpenGLShader(const OpenGLShader& shader);
 		OpenGLShader(const char* shaderFile);
 		OpenGLShader(const char* vertexShaderFile, const char* fragmentShaderFile, const char* geometricShaderFile = nullptr);
-		OpenGLShader(int dummy, const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometricShaderCode = nullptr);
+		OpenGLShader(int dummy, const char* shaderName, const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometricShaderCode = nullptr);
+
+		const std::string& GetName() const override { return name; }
 
 		void compile(const char* vertexShaderFile, const char* fragmentShaderFile, const char* geometricShaderFile = nullptr);
 		void compile(int dummy, const char* vertexShaderCode, const char* fragmentShaderCode, const char* geometricShaderCode = nullptr);
