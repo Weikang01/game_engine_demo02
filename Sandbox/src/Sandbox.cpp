@@ -39,13 +39,12 @@ public:
 		m_indexBuffer.reset(Engine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 		m_vertexArray->SetIndexBuffer(m_indexBuffer);
 
-
-		float squareVertices[3 * 4] =
+		float squareVertices[5 * 4] =
 		{
-			-.5f, -.5f, .0f,
-			 .5f, -.5f, .0f,
-			 .5f,  .5f, .0f,
-			-.5f,  .5f, .0f,
+			-.5f, -.5f, .0f, 0.f, 0.f,
+			 .5f, -.5f, .0f, 1.f, 0.f,
+			 .5f,  .5f, .0f, 1.f, 1.f,
+			-.5f,  .5f, .0f, 0.f, 1.f
 		};
 
 		std::shared_ptr<Engine::VertexBuffer> squareVB;
@@ -53,7 +52,8 @@ public:
 
 		Engine::BufferLayout squareLayout =
 		{
-			{Engine::ShaderDataType::Float3, "a_Position"}
+			{Engine::ShaderDataType::Float3, "a_Position"},
+			{Engine::ShaderDataType::Float2, "a_texCoord"}
 		};
 		squareVB->SetLayout(squareLayout);
 		m_SquareVA->AddVertexBuffer(squareVB);
@@ -102,8 +102,10 @@ void main()
 		const char* squareVertexSrc = R"(
 #version 440 core
 layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 TexCoord;
 
 out vec3 pos;
+out vec2 texCoord;
 uniform mat4 viewProjMat;
 uniform mat4 modelMat;
 
@@ -111,6 +113,7 @@ void main()
 {
 	gl_Position = viewProjMat * modelMat * vec4(position, 1.f);
 	pos = position + vec3(.5f);
+	texCoord = TexCoord;
 }
 )";
 
@@ -118,15 +121,20 @@ void main()
 #version 440 core
 
 in vec3 pos;
+in vec2 texCoord;
 uniform vec3 tint;
+uniform sampler2D u_texture;
 
 void main()
 {
-	gl_FragColor = vec4(pos * tint, 1.f);
+	gl_FragColor = texture(u_texture, texCoord);
 }
 )";
 
 		m_squareShader.reset(Engine::Shader::Create(1, squareVertexSrc, squareFragmentSrc));
+
+		m_Texture = Engine::Texture2D::Create("assets/textures/Checkerboard.png");
+		std::dynamic_pointer_cast<Engine::OpenGLShader> (m_squareShader)->setInt("u_texture", 0);
 	}
 
 	void OnUpdate(Engine::Timestep ts) override
@@ -158,17 +166,9 @@ void main()
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(.05f));
 
-		for (int y = 0; y < 20; y++)
-		{
-			for (int x = 0; x < 20; x++)
-			{
-				glm::vec3 pos(x * .11f, y * .11, 0.f);
-				glm::mat4 transform = glm::translate(glm::mat4(1.f), pos) * scale;
-				std::dynamic_pointer_cast<Engine::OpenGLShader> (m_squareShader)->set3fv("tint", m_SquareCol);
-
-				Engine::Renderer::Submit(m_SquareVA, m_squareShader, transform);
-			}
-		}
+		m_Texture->Bind(0);
+		Engine::Renderer::Submit(m_SquareVA, m_squareShader, glm::scale(glm::mat4(1.f), glm::vec3(1.5f)));
+		std::dynamic_pointer_cast<Engine::OpenGLShader> (m_squareShader)->set3fv("tint", m_SquareCol);
 
 		//Engine::Renderer::Submit(m_vertexArray, m_shader);
 
@@ -194,6 +194,7 @@ private:
 	Engine::Ref<Engine::IndexBuffer> m_indexBuffer;
 	Engine::Ref<Engine::VertexArray> m_vertexArray;
 	Engine::Ref<Engine::VertexArray> m_SquareVA;
+	Engine::Ref<Engine::Texture2D> m_Texture;
 
 	Engine::OrthographicCamera m_Camera;
 	glm::vec3 m_CamPos = glm::vec3();
