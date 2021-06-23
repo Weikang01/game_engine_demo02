@@ -12,7 +12,7 @@ namespace Engine
         RenderCommand::Init();
     }
 
-    void Renderer::BeginScene(OrthographicCamera& camera)
+    void Renderer::BeginScene(const OrthographicCamera& camera)
     {
         m_SceneData->ViewProjectionMat = camera.GetViewProjectionMatrix();
     }

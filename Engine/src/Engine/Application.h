@@ -30,7 +30,7 @@ namespace Engine
 
 		static Application& Get() { return *s_instance; }
 		Window& GetWindow() { return *m_window; }
-	private:
+	protected:
 		static Application* s_instance;
 
 		bool OnWindowClose(WindowCloseEvent& evnt);

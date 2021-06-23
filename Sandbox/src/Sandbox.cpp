@@ -9,7 +9,7 @@ class ExampleLayer :public Engine::Layer
 {
 public:
 	ExampleLayer()
-		:Layer("Example"), m_Camera(-1.6f, 1.6f, -.9f, .9f)
+		:Layer("Example"), m_CameraController((float)Engine::Application::Get().GetWindow().GetWidth() / (float)Engine::Application::Get().GetWindow().GetHeight())
 	{
 		m_vertexArray.reset(Engine::VertexArray::Create());
 		m_SquareVA.reset(Engine::VertexArray::Create());
@@ -74,30 +74,12 @@ public:
 
 	void OnUpdate(Engine::Timestep ts) override
 	{
-		if (Engine::Input::IsKeyPressed(Engine::Key::A))
-			m_CamPos.x -= m_CamSpeed * ts;
-
-		if (Engine::Input::IsKeyPressed(Engine::Key::D))
-			m_CamPos.x += m_CamSpeed * ts;
-
-		if (Engine::Input::IsKeyPressed(Engine::Key::S))
-			m_CamPos.y -= m_CamSpeed * ts;
-
-		if (Engine::Input::IsKeyPressed(Engine::Key::W))
-			m_CamPos.y += m_CamSpeed * ts;
-
-		if (Engine::Input::IsKeyPressed(Engine::Key::Q))
-			m_CamAngle += m_CamRotSpeed * ts;
-
-		if (Engine::Input::IsKeyPressed(Engine::Key::E))
-			m_CamAngle -= m_CamRotSpeed * ts;
+		m_CameraController.onUpdate(ts);
 
 		Engine::RenderCommand::SetClearColor({ 0, 0, 0, 1 });
 		Engine::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CamPos);
-		m_Camera.SetRotation(m_CamAngle);
-		Engine::Renderer::BeginScene(m_Camera);
+		Engine::Renderer::BeginScene(m_CameraController.getCamera());
 
 		static glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(.05f));
 
@@ -124,7 +106,7 @@ public:
 
 	void OnEvent(Engine::Event& evnt) override
 	{
-
+		m_CameraController.onEvent(evnt);
 	}
 
 private:
@@ -136,11 +118,7 @@ private:
 	Engine::Ref<Engine::Texture2D> m_checkerBoardTexture;
 	Engine::Ref<Engine::Texture2D> m_faceTexture;
 
-	Engine::OrthographicCamera m_Camera;
-	glm::vec3 m_CamPos = glm::vec3();
-	float m_CamSpeed = .1f;
-	float m_CamAngle = 0.f;
-	float m_CamRotSpeed = 1.f;
+	Engine::OrthographicCameraController m_CameraController;
 	glm::vec3 m_SquarePos = glm::vec3(.3f, .3f, 0.f);
 	glm::vec3 m_SquareCol = glm::vec3(1.f, 1.f, 1.f);
 };
