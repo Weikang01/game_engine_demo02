@@ -12,6 +12,8 @@ namespace Engine
 	public:
 		static void Init();
 
+		static void OnWindowResize(uint32_t width, uint32_t height);
+
 		static void BeginScene(const OrthographicCamera& camera);
 		static void EndScene();
 

@@ -34,6 +34,7 @@ namespace Engine
 	{
 		EventDispatcher dispatcher(evnt);
 		dispatcher.Dispatch<WindowCloseEvent>(ENGINE_BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(ENGINE_BIND_EVENT_FN(Application::OnWindowResize));
 
 		for (auto it = m_layerStack.end(); it != m_layerStack.begin();)
 		{
@@ -61,6 +62,18 @@ namespace Engine
 		return true;
 	}
 
+	bool Application::OnWindowResize(WindowResizeEvent& evnt)
+	{
+		if (evnt.GetWidth() == 0 && evnt.GetHeight() == 0)
+		{
+			m_minimized = true;
+			return false;
+		}
+		m_minimized = false;
+		Renderer::OnWindowResize(evnt.GetWidth(), evnt.GetHeight());
+		return false;
+	}
+
 	void Application::Run()
 	{
 		while (m_running)
@@ -69,12 +82,14 @@ namespace Engine
 			Timestep timestep = time - m_lastFrameTime;
 			m_lastFrameTime = time;
 
+			if (!m_minimized)
+			{
+				for (Layer* layer : m_layerStack)
+					layer->OnUpdate(timestep);
+			}
 			m_imGuiLayer->begin();
 			for (Layer* layer : m_layerStack)
-			{
-				layer->OnUpdate(timestep);
 				layer->OnImGuiRender();
-			}
 			m_imGuiLayer->end();
 
 			m_window->OnUpdate();

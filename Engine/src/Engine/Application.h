@@ -34,10 +34,12 @@ namespace Engine
 		static Application* s_instance;
 
 		bool OnWindowClose(WindowCloseEvent& evnt);
+		bool OnWindowResize(WindowResizeEvent& evnt);
 
 		std::unique_ptr<Window> m_window;
 		ImGuiLayer* m_imGuiLayer = nullptr;
 		bool m_running = true;
+		bool m_minimized = false;
 		LayerStack m_layerStack;
 
 		float m_lastFrameTime = 0.f;

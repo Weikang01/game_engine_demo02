@@ -46,7 +46,6 @@ namespace Engine
 	{
 		float transmission = std::max(std::min(m_zoomLevel * m_zoomLevel, 3.f), 0.02f);
 		m_zoomLevel -= e.GetYOffset() * transmission * .2f;
-		std::cout << m_zoomLevel << "  "<< e.GetYOffset() << std::endl;
 		m_camera.SetProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
 
 		m_camSpeed = m_zoomLevel;
