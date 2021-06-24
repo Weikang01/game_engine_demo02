@@ -9,7 +9,7 @@ namespace Engine
 	{
 	public:
 		static void Init();
-		static void ShotDown();
+		static void ShutDown();
 
 		static void BeginScene(const OrthographicCamera& camera);
 		static void EndScene();
