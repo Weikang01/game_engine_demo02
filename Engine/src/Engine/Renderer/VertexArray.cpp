@@ -6,12 +6,12 @@
 
 namespace Engine
 {
-	VertexArray* VertexArray::Create()
+	Ref<VertexArray> VertexArray::Create()
 	{
 		switch (Renderer::GetAPI())
 		{
 		case RendererAPI::API::OpenGL:
-			return new OpenGLVertexArray();
+			return std::make_shared<OpenGLVertexArray>();
 			break;
 		}
 		EG_CORE_ASSERT(false, "RendererAPI case is currently not supported!");

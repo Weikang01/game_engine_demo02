@@ -21,11 +21,8 @@
 #include "Engine/Renderer/OrthographicCameraController.h"
 #include "Engine/Renderer/RenderCommand.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/Renderer2D.h"
 #include "Engine/Renderer/RendererAPI.h"
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Texture.h"
-
-// ---Entry Point----------------
-#include "Engine/EntryPoint.h"
-// ---Entry Point----------------
