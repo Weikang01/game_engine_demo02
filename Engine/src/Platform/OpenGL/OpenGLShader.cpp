@@ -220,7 +220,7 @@ namespace Engine
 		glShaderSource(sFragment, 1, &fragmentSource, NULL);
 		glCompileShader(sFragment);
 		checkCompileErrors(sFragment, "FRAGMENT");
-		// if geometry shader source code is given, also compile geometry shader
+		// if geometry flatColorShader source code is given, also compile geometry flatColorShader
 		if (geometrySource != nullptr)
 		{
 			gShader = glCreateShader(GL_GEOMETRY_SHADER);
@@ -228,7 +228,7 @@ namespace Engine
 			glCompileShader(gShader);
 			checkCompileErrors(gShader, "GEOMETRY");
 		}
-		// shader program
+		// flatColorShader program
 		this->id = glCreateProgram();
 		glAttachShader(this->id, sVertex);
 		glAttachShader(this->id, sFragment);
